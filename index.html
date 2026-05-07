@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BBClock - Live World Clock</title>
+
+<meta name="description" content="BBClock is a live world clock showing real-time international time zones, UTC, GMT, and global city clocks with auto location detection.">
+
+<meta name="keywords" content="world clock, live world clock, timezone converter, UTC time, GMT clock, global clock, online clock, international time">
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:#0f172a;
+  color:white;
+  font-family:Arial;
+}
+
+header{
+  text-align:center;
+  padding:25px;
+}
+
+h1{
+  font-size:40px;
+}
+
+.search-box{
+  text-align:center;
+  margin:15px;
+}
+
+#search{
+  padding:12px;
+  width:280px;
+  border-radius:10px;
+  border:none;
+  outline:none;
+}
+
+.user{
+  text-align:center;
+  color:#38bdf8;
+  margin-bottom:10px;
+  font-weight:bold;
+}
+
+.clock-container{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+  padding:20px;
+}
+
+.clock{
+  background:#1e293b;
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+}
+
+.time12{
+  font-size:28px;
+  font-weight:bold;
+}
+
+.time24{
+  color:#38bdf8;
+}
+
+.article{
+  max-width:900px;
+  margin:40px auto;
+  padding:20px;
+  background:#1e293b;
+  border-radius:15px;
+  line-height:1.7;
+}
+
+.article h2{
+  color:#38bdf8;
+  margin-bottom:10px;
+}
+
+.keywords{
+  font-size:13px;
+  color:#94a3b8;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🌍 BBClock</h1>
+<p>Live World Time System</p>
+</header>
+
+<div class="search-box">
+<input id="search" placeholder="Search city...">
+</div>
+
+<div id="user" class="user"></div>
+
+<div id="clock-container" class="clock-container"></div>
+
+<!-- ARTICLE -->
+<section class="article">
+
+<h2>🌍 Live World Clock</h2>
+
+<p>
+BBClock is a real-time world clock system that shows global time zones, international cities, and auto-detected local time.
+</p>
+
+<p>
+It supports both 12-hour and 24-hour formats and updates every second.
+</p>
+
+<h3>🔍 SEO Keywords</h3>
+
+<p class="keywords">
+world clock, live world clock, timezone converter, UTC time, GMT clock, global clock, international time, online clock system
+</p>
+
+</section>
+
+<script>
+
+const cities = [
+  {name:"Dhaka", country:"Bangladesh", zone:"Asia/Dhaka"},
+  {name:"London", country:"UK", zone:"Europe/London"},
+  {name:"New York", country:"USA", zone:"America/New_York"},
+  {name:"Tokyo", country:"Japan", zone:"Asia/Tokyo"},
+  {name:"Dubai", country:"UAE", zone:"Asia/Dubai"},
+  {name:"Sydney", country:"Australia", zone:"Australia/Sydney"},
+  {name:"Toronto", country:"Canada", zone:"America/Toronto"},
+  {name:"Paris", country:"France", zone:"Europe/Paris"},
+  {name:"Hong Kong", country:"China", zone:"Asia/Hong_Kong"},
+  {name:"Singapore", country:"Singapore", zone:"Asia/Singapore"}
+];
+
+// 🌍 AUTO LOCATION (SAFE METHOD)
+const userZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+let userCity = cities.find(c => c.zone === userZone);
+
+if(!userCity){
+  userCity = {
+    name: userZone.split("/")[1]?.replace("_"," ") || "Your Local Time",
+    country: "Detected Location",
+    zone: userZone
+  };
+}
+
+const container = document.getElementById("clock-container");
+const userDiv = document.getElementById("user");
+const search = document.getElementById("search");
+
+function render(){
+
+  const val = search.value.toLowerCase();
+
+  container.innerHTML = "";
+
+  userDiv.innerHTML = "📍 Your Location: " + userCity.name;
+
+  const list = cities.filter(c =>
+    c.name.toLowerCase().includes(val)
+  );
+
+  list.forEach(city => {
+
+    const t12 = new Date().toLocaleTimeString("en-US",{
+      timeZone:city.zone,
+      hour:"numeric",
+      minute:"2-digit",
+      second:"2-digit",
+      hour12:true
+    });
+
+    const t24 = new Date().toLocaleTimeString("en-GB",{
+      timeZone:city.zone,
+      hour:"2-digit",
+      minute:"2-digit",
+      second:"2-digit",
+      hour12:false
+    });
+
+    const div = document.createElement("div");
+    div.className = "clock";
+
+    div.innerHTML = `
+      <h3>${city.name}</h3>
+      <p>${city.country}</p>
+      <div class="time12">${t12}</div>
+      <div class="time24">${t24}</div>
+    `;
+
+    container.appendChild(div);
+
+  });
+
+}
+
+search.addEventListener("input", render);
+setInterval(render,1000);
+render();
+
+</script>
+
+</body>
+</html>
